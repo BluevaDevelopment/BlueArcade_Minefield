@@ -1,0 +1,12 @@
+name: Minefield
+id: minefield
+version: 1.0.0
+type: MICROGAME
+api-version: 1.0
+main: net.blueva.arcade.modules.minefield.MinefieldModule
+
+authors:
+  - Blueva
+  - Whiron
+
+description: "Cross the minefield without getting blown up."
