@@ -190,6 +190,11 @@ public class MinefieldGameManager {
     public void handlePlayerDeath(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
                                   Player player,
                                   boolean deathBlock) {
+        // Don't broadcast death messages for spectators
+        if (context.getSpectators().contains(player)) {
+            return;
+        }
+
         messageService.broadcastDeathMessage(context, player, deathBlock);
     }
 
@@ -253,6 +258,11 @@ public class MinefieldGameManager {
     public void handlePlayerOutOfBounds(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
                                         Player player,
                                         boolean deathBlock) {
+        // Don't process death for spectators
+        if (context.getSpectators().contains(player)) {
+            return;
+        }
+
         Location deathLocation = player.getLocation();
         context.respawnPlayer(player);
         context.getSoundsAPI().play(player, coreConfig.getSound("sounds.in_game.respawn"));

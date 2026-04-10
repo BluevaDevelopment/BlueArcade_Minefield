@@ -4,6 +4,7 @@ import net.blueva.arcade.api.module.ModuleInfo;
 import net.blueva.arcade.api.stats.StatDefinition;
 import net.blueva.arcade.api.stats.StatScope;
 import net.blueva.arcade.api.stats.StatsAPI;
+import net.blueva.arcade.api.config.ModuleConfigAPI;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -12,10 +13,12 @@ public class MinefieldStatsService {
 
     private final StatsAPI statsAPI;
     private final ModuleInfo moduleInfo;
+    private final ModuleConfigAPI moduleConfig;
 
-    public MinefieldStatsService(StatsAPI statsAPI, ModuleInfo moduleInfo) {
+    public MinefieldStatsService(StatsAPI statsAPI, ModuleInfo moduleInfo, ModuleConfigAPI moduleConfig) {
         this.statsAPI = statsAPI;
         this.moduleInfo = moduleInfo;
+        this.moduleConfig = moduleConfig;
     }
 
     public void registerStats() {
@@ -24,13 +27,13 @@ public class MinefieldStatsService {
         }
 
         statsAPI.registerModuleStat(moduleInfo.getId(),
-                new StatDefinition("wins", "Wins", "Minefield wins", StatScope.MODULE));
+                new StatDefinition("wins", moduleConfig.getStringFrom("language.yml", "stats.labels.wins", "Wins"), moduleConfig.getStringFrom("language.yml", "stats.descriptions.wins", "Minefield wins"), StatScope.MODULE));
         statsAPI.registerModuleStat(moduleInfo.getId(),
-                new StatDefinition("games_played", "Games Played", "Minefield games played", StatScope.MODULE));
+                new StatDefinition("games_played", moduleConfig.getStringFrom("language.yml", "stats.labels.games_played", "Games Played"), moduleConfig.getStringFrom("language.yml", "stats.descriptions.games_played", "Minefield games played"), StatScope.MODULE));
         statsAPI.registerModuleStat(moduleInfo.getId(),
-                new StatDefinition("finish_line_crosses", "Finish line crosses", "Times you reached the safe zone", StatScope.MODULE));
+                new StatDefinition("finish_line_crosses", moduleConfig.getStringFrom("language.yml", "stats.labels.finish_line_crosses", "Finish line crosses"), moduleConfig.getStringFrom("language.yml", "stats.descriptions.finish_line_crosses", "Times you reached the safe zone"), StatScope.MODULE));
         statsAPI.registerModuleStat(moduleInfo.getId(),
-                new StatDefinition("mines_triggered", "Mines triggered", "Mines you have stepped on", StatScope.MODULE));
+                new StatDefinition("mines_triggered", moduleConfig.getStringFrom("language.yml", "stats.labels.mines_triggered", "Mines triggered"), moduleConfig.getStringFrom("language.yml", "stats.descriptions.mines_triggered", "Mines you have stepped on"), StatScope.MODULE));
     }
 
     public boolean isEnabled() {

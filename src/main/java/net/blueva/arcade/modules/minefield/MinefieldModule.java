@@ -50,7 +50,7 @@ public class MinefieldModule implements GameModule<Player, Location, World, Mate
         VoteMenuAPI voteMenu = ModuleAPI.getVoteMenuAPI();
         AchievementsAPI achievementsAPI = ModuleAPI.getAchievementsAPI();
 
-        statsService = new MinefieldStatsService(statsAPI, moduleInfo);
+        statsService = new MinefieldStatsService(statsAPI, moduleInfo, moduleConfig);
         statsService.registerStats();
 
         moduleConfig.register("language.yml", 1);

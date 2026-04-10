@@ -24,6 +24,12 @@ vote_menu:
     - "<white>{votes}</white> <gray>votes.</gray>"
 
 stats:
+
+  descriptions:
+    wins: "Minefield wins"
+    games_played: "Minefield games played"
+    finish_line_crosses: "Times you reached the safe zone"
+    mines_triggered: "Mines you have stepped on"
   labels:
     finish_line_crosses: "Safe zone crosses"
     games_played: "Minefields played"

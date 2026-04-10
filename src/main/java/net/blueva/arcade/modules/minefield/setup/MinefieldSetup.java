@@ -31,7 +31,7 @@ public class MinefieldSetup implements GameSetupHandler {
 
     private boolean handleInternal(SetupContext<Player, CommandSender, Location> context) {
         if (!context.hasHandlerArgs(1)) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage"));
             return true;
         }
 
@@ -43,7 +43,7 @@ public class MinefieldSetup implements GameSetupHandler {
             case "floor":
                 return handleFloor(context);
             default:
-                context.getMessagesAPI().send(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.unknown_subcommand"));
+                context.getMessagesAPI().sendRaw(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.unknown_subcommand"));
                 return true;
         }
     }
@@ -57,11 +57,10 @@ public class MinefieldSetup implements GameSetupHandler {
         int relIndex = context.getRelativeArgIndex();
 
         if (relIndex == 0) {
-            return TabCompleteResult.of("finishline", "floor");
-        }
-
-        if (relIndex == 1) {
-            return TabCompleteResult.of("set");
+            String subcommand = context.getArg(context.getStartIndex() - 1);
+            if ("finishline".equals(subcommand) || "floor".equals(subcommand)) {
+                return TabCompleteResult.of("set");
+            }
         }
 
         return TabCompleteResult.empty();
@@ -87,7 +86,7 @@ public class MinefieldSetup implements GameSetupHandler {
 
         if (!hasFinishLine || !hasFloor) {
             if (context.getSender() != null) {
-                context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.not_configured")
+                context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.not_configured")
                         .replace("{arena_id}", String.valueOf(context.getArenaId())));
             }
         }
@@ -97,26 +96,26 @@ public class MinefieldSetup implements GameSetupHandler {
 
     private boolean handleFinishLine(SetupContext<Player, CommandSender, Location> context) {
         if (!context.isPlayer()) {
-            context.getMessagesAPI().send(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.must_be_player"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.must_be_player"));
             return true;
         }
 
         if (!context.hasHandlerArgs(1)) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_finish_line"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_finish_line"));
             return true;
         }
 
         String action = context.getHandlerArg(0).toLowerCase();
 
         if (!action.equals("set")) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_finish_line"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_finish_line"));
             return true;
         }
 
         Player player = context.getPlayer();
 
         if (!context.getSelection().hasCompleteSelection(player)) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.must_use_stick"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.must_use_stick"));
             return true;
         }
 
@@ -131,7 +130,7 @@ public class MinefieldSetup implements GameSetupHandler {
         int z = (int) Math.abs(pos2.getZ() - pos1.getZ()) + 1;
         int blocks = x * y * z;
 
-        context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.set_success")
+        context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.set_success")
                 .replace("{blocks}", String.valueOf(blocks))
                 .replace("{x}", String.valueOf(x))
                 .replace("{y}", String.valueOf(y))
@@ -142,25 +141,25 @@ public class MinefieldSetup implements GameSetupHandler {
 
     private boolean handleFloor(SetupContext<Player, CommandSender, Location> context) {
         if (!context.isPlayer()) {
-            context.getMessagesAPI().send(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.must_be_player"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), coreConfig.getLanguage("admin_commands.errors.must_be_player"));
             return true;
         }
 
         if (!context.hasHandlerArgs(1)) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_floor"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_floor"));
             return true;
         }
 
         String action = context.getHandlerArg(0).toLowerCase();
         if (!action.equals("set")) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_floor"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.usage_floor"));
             return true;
         }
 
         Player player = context.getPlayer();
 
         if (!context.getSelection().hasCompleteSelection(player)) {
-            context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.must_use_stick"));
+            context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.must_use_stick"));
             return true;
         }
 
@@ -175,7 +174,7 @@ public class MinefieldSetup implements GameSetupHandler {
         int z = (int) Math.abs(pos2.getZ() - pos1.getZ()) + 1;
         int blocks = x * y * z;
 
-        context.getMessagesAPI().send(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.set_success_floor")
+        context.getMessagesAPI().sendRaw(context.getPlayer(), moduleConfig.getStringFrom("language.yml", "setup_messages.set_success_floor")
                 .replace("{blocks}", String.valueOf(blocks))
                 .replace("{x}", String.valueOf(x))
                 .replace("{y}", String.valueOf(y))

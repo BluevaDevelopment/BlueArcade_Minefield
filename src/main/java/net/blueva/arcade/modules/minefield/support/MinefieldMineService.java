@@ -153,14 +153,8 @@ public class MinefieldMineService {
 
         grantMineImmunity(player);
 
-        double verticalForce = moduleConfig.getDouble("mines.explosion.vertical_force");
-        double backwardForce = moduleConfig.getDouble("mines.explosion.backward_force");
-        if (verticalForce <= 0) {
-            verticalForce = 1.35;
-        }
-        if (backwardForce <= 0) {
-            backwardForce = 1.05;
-        }
+        double verticalForce = moduleConfig.getDouble("mines.explosion.vertical_force", 1.35);
+        double backwardForce = moduleConfig.getDouble("mines.explosion.backward_force", 1.05);
         String particleName = moduleConfig.getString("mines.explosion.particle");
         String soundName = moduleConfig.getString("mines.explosion.sound");
 
