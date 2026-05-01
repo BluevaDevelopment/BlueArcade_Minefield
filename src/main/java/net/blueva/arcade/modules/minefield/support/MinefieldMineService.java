@@ -162,7 +162,7 @@ public class MinefieldMineService {
             Particle particle = Particle.valueOf(particleName.toUpperCase());
             plateLocation.getWorld().spawnParticle(particle, plateLocation.clone().add(0.5, 0.2, 0.5), 1);
         } catch (Exception ignored) {
-            plateLocation.getWorld().spawnParticle(Particle.EXPLOSION, plateLocation.clone().add(0.5, 0.2, 0.5), 1);
+            plateLocation.getWorld().spawnParticle(explosionParticle(), plateLocation.clone().add(0.5, 0.2, 0.5), 1);
         }
 
         try {
@@ -254,5 +254,13 @@ public class MinefieldMineService {
 
     public void clearAll() {
         playerMineImmunity.clear();
+    }
+
+    private Particle explosionParticle() {
+        try {
+            return Particle.valueOf("EXPLOSION");
+        } catch (IllegalArgumentException ignored) {
+            return Particle.EXPLOSION_NORMAL;
+        }
     }
 }
