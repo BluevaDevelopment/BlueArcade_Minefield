@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -166,9 +167,9 @@ public class MinefieldMineService {
         }
 
         try {
-            Sound sound = Sound.valueOf(soundName.toUpperCase());
+            Sound sound = resolveSound(soundName, Sound.ENTITY_GENERIC_EXPLODE);
             plateLocation.getWorld().playSound(plateLocation, sound, 1.2f, 1.0f);
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
             plateLocation.getWorld().playSound(plateLocation, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 1.0f);
         }
 
@@ -262,5 +263,37 @@ public class MinefieldMineService {
         } catch (IllegalArgumentException ignored) {
             return Particle.EXPLOSION_NORMAL;
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Sound resolveSound(String soundName, Sound fallback) {
+        if (soundName == null || soundName.isBlank()) {
+            return fallback;
+        }
+
+        try {
+            return (Sound) Enum.valueOf((Class) Sound.class, soundName.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException | ClassCastException ignored) {
+        }
+
+        try {
+            Class<?> namespacedKeyClass = Class.forName("org.bukkit.NamespacedKey");
+            Object key = namespacedKeyClass
+                    .getMethod("minecraft", String.class)
+                    .invoke(null, toModernSoundKey(soundName));
+            Object registry = Class.forName("org.bukkit.Registry").getField("SOUNDS").get(null);
+            Object resolved = registry.getClass().getMethod("get", namespacedKeyClass).invoke(registry, key);
+            if (resolved instanceof Sound sound) {
+                return sound;
+            }
+        } catch (ReflectiveOperationException ignored) {
+        }
+
+        return fallback;
+    }
+
+    private String toModernSoundKey(String soundName) {
+        String normalized = soundName.trim().toLowerCase(Locale.ROOT);
+        return normalized.contains(":") ? normalized.substring(normalized.indexOf(':') + 1) : normalized.replace('_', '.');
     }
 }
