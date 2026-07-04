@@ -158,6 +158,7 @@ public class MinefieldMineService {
         double backwardForce = moduleConfig.getDouble("mines.explosion.backward_force", 1.05);
         String particleName = moduleConfig.getString("mines.explosion.particle");
         String soundName = moduleConfig.getString("mines.explosion.sound");
+        String teleportSpawn = moduleConfig.getString("mines.teleport");
 
         try {
             Particle particle = Particle.valueOf(particleName.toUpperCase());
@@ -173,10 +174,19 @@ public class MinefieldMineService {
             plateLocation.getWorld().playSound(plateLocation, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 1.0f);
         }
 
-        Vector direction = player.getLocation().getDirection().normalize();
-        Vector velocity = direction.multiply(-backwardForce);
-        velocity.setY(verticalForce);
-        player.setVelocity(velocity);
+        if (teleportSpawn == "true") {
+            context.respawnPlayer(player);
+        } else if (teleportSpawn == "false") {
+            Vector direction = player.getLocation().getDirection().normalize();
+            Vector velocity = direction.multiply(-backwardForce);
+            velocity.setY(verticalForce);
+            player.setVelocity(velocity);
+        }
+
+        String message = messageService.getMineTriggeredMessage();
+        if (message != null) {
+            context.getMessagesAPI().sendRaw(player, message);
+        }
 
         String message = messageService.getMineTriggeredMessage();
         if (message != null) {
