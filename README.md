@@ -1,7 +1,7 @@
 # BlueArcade - Minefield
 
 This resource is a **BlueArcade 3 module** and requires the core plugin to run.
-Get BlueArcade 3 here: https://store.blueva.net/resources/resource/1-blue-arcade/
+Get BlueArcade 3 here: https://blueva.net/store/blue-arcade
 
 ## Description
 Cross the minefield without getting blown up. Reach the finish line first.
