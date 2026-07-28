@@ -56,7 +56,6 @@ public class MinefieldStatsService {
         }
 
         statsAPI.addModuleStat(player, moduleInfo.getId(), "wins", 1);
-        statsAPI.addGlobalStat(player, "wins", 1);
     }
 
     public void recordFinishLine(Player player) {
