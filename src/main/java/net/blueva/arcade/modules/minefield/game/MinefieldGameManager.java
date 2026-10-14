@@ -4,6 +4,7 @@ import net.blueva.arcade.api.ModuleAPI;
 import net.blueva.arcade.api.config.CoreConfigAPI;
 import net.blueva.arcade.api.config.ModuleConfigAPI;
 import net.blueva.arcade.api.game.GameContext;
+import net.blueva.arcade.api.game.GamePhase;
 import net.blueva.arcade.api.module.ModuleInfo;
 import net.blueva.arcade.api.visuals.VisualEffectsAPI;
 import net.blueva.arcade.modules.minefield.state.MinefieldArenaState;
@@ -237,12 +238,16 @@ public class MinefieldGameManager {
 
     public void handleFinishLineCross(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
                                       Player player) {
-        if (context.getSpectators().contains(player)) {
+        MinefieldArenaState state = arenaRegistry.getArenaState(context.getArenaId());
+        if (state == null || context.getPhase() != GamePhase.PLAYING || !context.isPlayerPlaying(player)) {
             return;
         }
 
         context.finishPlayer(player);
-        int position = context.getSpectators().indexOf(player) + 1;
+        if (!state.recordFinish(player)) {
+            return;
+        }
+        int position = state.getFinishedPlayers().indexOf(player) + 1;
 
         handlePlayerFinish(player);
         messageService.broadcastFinish(context, player, position);
@@ -286,7 +291,8 @@ public class MinefieldGameManager {
         }
 
         MinefieldArenaState state = arenaRegistry.getArenaState(context.getArenaId());
-        Map<String, String> placeholders = new HashMap<>(scoreboardService.getCustomPlaceholders(context, player));
+        if (state == null) return new HashMap<>();
+        Map<String, String> placeholders = new HashMap<>(scoreboardService.getCustomPlaceholders(context, state, player));
         if (state != null) {
             placeholders.put("mines_active", String.valueOf(mineService.getActiveMineCount(state)));
         }

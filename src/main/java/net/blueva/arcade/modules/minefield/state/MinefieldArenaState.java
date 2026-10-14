@@ -9,7 +9,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +22,7 @@ public class MinefieldArenaState {
 
     private final GameContext<org.bukkit.entity.Player, Location, World, Material, ItemStack, Sound, Block, Entity> context;
     private final Set<Location> mines = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final CopyOnWriteArrayList<Player> finishedPlayers = new CopyOnWriteArrayList<>();
     private volatile boolean ended;
     private volatile UUID winner;
     private volatile String timerTaskId;
@@ -32,6 +37,14 @@ public class MinefieldArenaState {
 
     public Set<Location> getMines() {
         return mines;
+    }
+
+    public List<Player> getFinishedPlayers() {
+        return new ArrayList<>(finishedPlayers);
+    }
+
+    public boolean recordFinish(Player player) {
+        return finishedPlayers.addIfAbsent(player);
     }
 
     public boolean isEnded() {

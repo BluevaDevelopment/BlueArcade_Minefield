@@ -1,6 +1,7 @@
 package net.blueva.arcade.modules.minefield.support;
 
 import net.blueva.arcade.api.game.GameContext;
+import net.blueva.arcade.modules.minefield.state.MinefieldArenaState;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -17,14 +18,14 @@ import java.util.Map;
 
 public class MinefieldScoreboardService {
 
-    public Map<String, String> getCustomPlaceholders(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
+    public Map<String, String> getCustomPlaceholders(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context, MinefieldArenaState state,
                                                      Player player) {
         Map<String, String> placeholders = new HashMap<>();
 
-        int position = calculateLivePosition(context, player);
-        placeholders.put("minefield_position", String.valueOf(position));
+        int position = calculateLivePosition(context, state, player);
+        placeholders.put("minefield_position", position > 0 ? String.valueOf(position) : "-");
 
-        List<Player> topPlayers = getTopPlayersByDistance(context);
+        List<Player> topPlayers = getTopPlayersByDistance(context, state);
         placeholders.put("place_1", topPlayers.size() >= 1 ? topPlayers.get(0).getName() : "-");
         placeholders.put("place_2", topPlayers.size() >= 2 ? topPlayers.get(1).getName() : "-");
         placeholders.put("place_3", topPlayers.size() >= 3 ? topPlayers.get(2).getName() : "-");
@@ -34,9 +35,9 @@ public class MinefieldScoreboardService {
         return placeholders;
     }
 
-    public String formatDistance(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
+    public String formatDistance(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context, MinefieldArenaState state,
                                  Player player) {
-        if (context.getSpectators().contains(player)) {
+        if (state.getFinishedPlayers().contains(player)) {
             return "0";
         }
 
@@ -48,11 +49,11 @@ public class MinefieldScoreboardService {
         return String.format("%.0f", distance);
     }
 
-    public List<Player> getTopPlayersByDistance(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context) {
+    public List<Player> getTopPlayersByDistance(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context, MinefieldArenaState state) {
         List<Player> alivePlayers = context.getAlivePlayers();
-        List<Player> spectators = context.getSpectators();
+        List<Player> finishers = state.getFinishedPlayers();
 
-        List<Player> topPlayers = new ArrayList<>(spectators);
+        List<Player> topPlayers = new ArrayList<>(finishers);
 
         Map<Player, Double> distances = new HashMap<>();
         for (Player p : alivePlayers) {
@@ -73,13 +74,13 @@ public class MinefieldScoreboardService {
         return topPlayers;
     }
 
-    private int calculateLivePosition(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,
+    private int calculateLivePosition(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context, MinefieldArenaState state,
                                       Player player) {
         List<Player> alivePlayers = context.getAlivePlayers();
-        List<Player> spectators = context.getSpectators();
+        List<Player> finishers = state.getFinishedPlayers();
 
-        if (spectators.contains(player)) {
-            return spectators.indexOf(player) + 1;
+        if (finishers.contains(player)) {
+            return finishers.indexOf(player) + 1;
         }
 
         Map<Player, Double> distances = new HashMap<>();
@@ -96,11 +97,11 @@ public class MinefieldScoreboardService {
 
         for (int i = 0; i < sorted.size(); i++) {
             if (sorted.get(i).getKey().equals(player)) {
-                return spectators.size() + i + 1;
+                return finishers.size() + i + 1;
             }
         }
 
-        return spectators.size() + alivePlayers.size();
+        return 0;
     }
 
     private double getDistanceToFinish(GameContext<Player, Location, World, Material, ItemStack, Sound, Block, Entity> context,

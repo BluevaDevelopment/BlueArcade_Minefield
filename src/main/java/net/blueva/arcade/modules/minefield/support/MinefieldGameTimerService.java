@@ -61,9 +61,9 @@ public class MinefieldGameTimerService {
 
             List<Player> alivePlayers = context.getAlivePlayers();
             List<Player> allPlayers = context.getPlayers();
-            List<Player> spectators = context.getSpectators();
+            List<Player> finishers = state.getFinishedPlayers();
 
-            if (allPlayers.size() < 2 || alivePlayers.isEmpty() || spectators.size() >= 3 || timeLeft[0] <= 0) {
+            if (allPlayers.size() < 2 || alivePlayers.isEmpty() || finishers.size() >= 3 || timeLeft[0] <= 0) {
                 endGameCallback.run();
                 return;
             }
@@ -76,7 +76,7 @@ public class MinefieldGameTimerService {
                            MinefieldArenaState state,
                            List<Player> allPlayers,
                            int timeLeft) {
-        List<Player> topPlayers = scoreboardService.getTopPlayersByDistance(context);
+        List<Player> topPlayers = scoreboardService.getTopPlayersByDistance(context, state);
 
         for (Player player : allPlayers) {
             if (!player.isOnline()) {
@@ -87,16 +87,16 @@ public class MinefieldGameTimerService {
             String actionBarMessage = formatActionBar(actionBarTemplate, context, timeLeft);
             context.getMessagesAPI().sendActionBar(player, actionBarMessage);
 
-            Map<String, String> customPlaceholders = new HashMap<>(scoreboardService.getCustomPlaceholders(context, player));
+            Map<String, String> customPlaceholders = new HashMap<>(scoreboardService.getCustomPlaceholders(context, state, player));
             customPlaceholders.put("time", formatCountdownTime(timeLeft));
             customPlaceholders.put("round", String.valueOf(context.getCurrentRound()));
             customPlaceholders.put("round_max", String.valueOf(context.getMaxRounds()));
 
-            customPlaceholders.put("distance_1", topPlayers.size() >= 1 ? scoreboardService.formatDistance(context, topPlayers.get(0)) : "-");
-            customPlaceholders.put("distance_2", topPlayers.size() >= 2 ? scoreboardService.formatDistance(context, topPlayers.get(1)) : "-");
-            customPlaceholders.put("distance_3", topPlayers.size() >= 3 ? scoreboardService.formatDistance(context, topPlayers.get(2)) : "-");
-            customPlaceholders.put("distance_4", topPlayers.size() >= 4 ? scoreboardService.formatDistance(context, topPlayers.get(3)) : "-");
-            customPlaceholders.put("distance_5", topPlayers.size() >= 5 ? scoreboardService.formatDistance(context, topPlayers.get(4)) : "-");
+            customPlaceholders.put("distance_1", topPlayers.size() >= 1 ? scoreboardService.formatDistance(context, state, topPlayers.get(0)) : "-");
+            customPlaceholders.put("distance_2", topPlayers.size() >= 2 ? scoreboardService.formatDistance(context, state, topPlayers.get(1)) : "-");
+            customPlaceholders.put("distance_3", topPlayers.size() >= 3 ? scoreboardService.formatDistance(context, state, topPlayers.get(2)) : "-");
+            customPlaceholders.put("distance_4", topPlayers.size() >= 4 ? scoreboardService.formatDistance(context, state, topPlayers.get(3)) : "-");
+            customPlaceholders.put("distance_5", topPlayers.size() >= 5 ? scoreboardService.formatDistance(context, state, topPlayers.get(4)) : "-");
             customPlaceholders.put("mines_active", String.valueOf(mineService.getActiveMineCount(state)));
 
             context.getScoreboardAPI().update(player, customPlaceholders);
